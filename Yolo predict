@@ -1,0 +1,27 @@
+!pip install ultralytics
+from ultralytics import YOLO
+#importamos la libreria necesaria para realizar las tareas
+
+model = YOLO("yolov8m.pt") #importamos un modelo predeterminado de YOLO, este sirve para la deteccion de objetos
+
+user_input = input('Inserte imagen: ') #esto es por mientras para ver como funciona
+predicts = model.predict(user_input, classes=14) #el modelo "predice" los objetos que se encuentran en la imagen
+result = predicts[0]
+print(len(result.boxes)) #imprime las detecciones
+
+for box in result.boxes:
+  class_id = result.names[box.cls[0].item()]
+  cords = box.xyxy[0].tolist()
+  cords = [round(x) for x in cords]
+  conf = round(box.conf[0].item(), 2)
+  print("Object type:", class_id)
+  print("Coordinates:", cords)
+  print("Probability:", conf)
+  print("---")
+#se imprimen los tipos de objetos que detecta, las coordenadas en las cuales detecta estos objetos y la probabilida de acierto
+
+from PIL import Image
+Image.fromarray(result.plot()[:,:,::-1])
+#nos muestra la imagen con las detecciones realizadas
+
+result.save_crop("carpeta_de_prueba/image.jpg") #guarda los recortes de las imagenes detectadas en la carpeta colocada
